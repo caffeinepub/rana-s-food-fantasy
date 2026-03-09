@@ -1,0 +1,45 @@
+import type { Principal } from "@icp-sdk/core/principal";
+export interface Some<T> {
+    __kind__: "Some";
+    value: T;
+}
+export interface None {
+    __kind__: "None";
+}
+export type Option<T> = Some<T> | None;
+export interface MenuItem {
+    name: string;
+    description: string;
+    available: boolean;
+    category: Category;
+    price: bigint;
+}
+export interface UserProfile {
+    name: string;
+}
+export enum Category {
+    homemadeFood = "homemadeFood",
+    freshVegetables = "freshVegetables",
+    spices = "spices"
+}
+export enum UserRole {
+    admin = "admin",
+    user = "user",
+    guest = "guest"
+}
+export interface backendInterface {
+    addPersistentMenuItem(menuItem: MenuItem): Promise<bigint>;
+    assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
+    deletePersistentMenuItem(id: bigint): Promise<void>;
+    getAllPersistentMenuItems(): Promise<Array<MenuItem>>;
+    getAllPersistentMenuItemsByCategory(): Promise<Array<[Category, Array<MenuItem>]>>;
+    getCallerUserProfile(): Promise<UserProfile | null>;
+    getCallerUserRole(): Promise<UserRole>;
+    getPersistentMenuItem(id: bigint): Promise<MenuItem>;
+    getPersistentMenuItemsByCategory(category: Category): Promise<Array<MenuItem>>;
+    getUserProfile(user: Principal): Promise<UserProfile | null>;
+    isCallerAdmin(): Promise<boolean>;
+    saveCallerUserProfile(profile: UserProfile): Promise<void>;
+    seedSampleItems(): Promise<void>;
+    updatePersistentMenuItem(id: bigint, menuItem: MenuItem): Promise<void>;
+}
