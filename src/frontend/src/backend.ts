@@ -100,9 +100,9 @@ export interface UserProfile {
     name: string;
 }
 export enum Category {
-    homemadeFood = "homemadeFood",
-    freshVegetables = "freshVegetables",
-    spices = "spices"
+    specialPerKg = "specialPerKg",
+    gymProtein = "gymProtein",
+    monthlyFood = "monthlyFood"
 }
 export enum UserRole {
     admin = "admin",
@@ -380,13 +380,13 @@ function from_candid_tuple_n13(_uploadFile: (file: ExternalBlob) => Promise<Uint
     ];
 }
 function from_candid_variant_n11(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
-    homemadeFood: null;
+    specialPerKg: null;
 } | {
-    freshVegetables: null;
+    gymProtein: null;
 } | {
-    spices: null;
+    monthlyFood: null;
 }): Category {
-    return "homemadeFood" in value ? Category.homemadeFood : "freshVegetables" in value ? Category.freshVegetables : "spices" in value ? Category.spices : value;
+    return "specialPerKg" in value ? Category.specialPerKg : "gymProtein" in value ? Category.gymProtein : "monthlyFood" in value ? Category.monthlyFood : value;
 }
 function from_candid_variant_n16(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     admin: null;
@@ -434,18 +434,18 @@ function to_candid_record_n2(_uploadFile: (file: ExternalBlob) => Promise<Uint8A
     };
 }
 function to_candid_variant_n4(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Category): {
-    homemadeFood: null;
+    specialPerKg: null;
 } | {
-    freshVegetables: null;
+    gymProtein: null;
 } | {
-    spices: null;
+    monthlyFood: null;
 } {
-    return value == Category.homemadeFood ? {
-        homemadeFood: null
-    } : value == Category.freshVegetables ? {
-        freshVegetables: null
-    } : value == Category.spices ? {
-        spices: null
+    return value == Category.specialPerKg ? {
+        specialPerKg: null
+    } : value == Category.gymProtein ? {
+        gymProtein: null
+    } : value == Category.monthlyFood ? {
+        monthlyFood: null
     } : value;
 }
 function to_candid_variant_n6(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: UserRole): {

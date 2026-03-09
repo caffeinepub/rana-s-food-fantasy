@@ -18,9 +18,9 @@ export interface UserProfile {
     name: string;
 }
 export enum Category {
-    homemadeFood = "homemadeFood",
-    freshVegetables = "freshVegetables",
-    spices = "spices"
+    specialPerKg = "specialPerKg",
+    gymProtein = "gymProtein",
+    monthlyFood = "monthlyFood"
 }
 export enum UserRole {
     admin = "admin",

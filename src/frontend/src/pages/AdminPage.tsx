@@ -34,9 +34,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   ArrowLeft,
+  CalendarDays,
   CheckCircle2,
-  Flame,
-  Leaf,
+  ChefHat,
+  Dumbbell,
   Loader2,
   Pencil,
   Phone,
@@ -44,7 +45,6 @@ import {
   ShieldAlert,
   Sparkles,
   Trash2,
-  UtensilsCrossed,
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -66,32 +66,32 @@ interface AdminPageProps {
 
 const CATEGORY_OPTIONS = [
   {
-    value: Category.homemadeFood,
-    label: "Homemade Food",
-    icon: <UtensilsCrossed className="w-4 h-4" />,
+    value: Category.monthlyFood,
+    label: "Monthly Food",
+    icon: <CalendarDays className="w-4 h-4" />,
   },
   {
-    value: Category.spices,
-    label: "Spices",
-    icon: <Flame className="w-4 h-4" />,
+    value: Category.specialPerKg,
+    label: "Special / Per Kg Menu",
+    icon: <ChefHat className="w-4 h-4" />,
   },
   {
-    value: Category.freshVegetables,
-    label: "Fresh Vegetables",
-    icon: <Leaf className="w-4 h-4" />,
+    value: Category.gymProtein,
+    label: "Gym & Protein Menu",
+    icon: <Dumbbell className="w-4 h-4" />,
   },
 ];
 
 const CATEGORY_LABELS: Record<Category, string> = {
-  [Category.homemadeFood]: "Homemade Food",
-  [Category.spices]: "Spices",
-  [Category.freshVegetables]: "Fresh Vegetables",
+  [Category.monthlyFood]: "Monthly Food",
+  [Category.specialPerKg]: "Special / Per Kg",
+  [Category.gymProtein]: "Gym & Protein",
 };
 
 const CATEGORY_COLORS: Record<Category, string> = {
-  [Category.homemadeFood]: "bg-primary/10 text-primary border-primary/20",
-  [Category.spices]: "bg-orange-100 text-orange-700 border-orange-200",
-  [Category.freshVegetables]: "bg-green-100 text-green-700 border-green-200",
+  [Category.monthlyFood]: "bg-primary/10 text-primary border-primary/20",
+  [Category.specialPerKg]: "bg-orange-100 text-orange-700 border-orange-200",
+  [Category.gymProtein]: "bg-green-100 text-green-700 border-green-200",
 };
 
 interface FormData {
@@ -106,7 +106,7 @@ const EMPTY_FORM: FormData = {
   name: "",
   description: "",
   price: "",
-  category: Category.homemadeFood,
+  category: Category.monthlyFood,
   available: true,
 };
 

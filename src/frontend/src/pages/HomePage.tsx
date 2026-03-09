@@ -2,14 +2,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
+  CalendarDays,
+  ChefHat,
   ChevronRight,
-  Flame,
+  Dumbbell,
   Heart,
-  Leaf,
   MapPin,
   Phone,
   ShieldCheck,
-  UtensilsCrossed,
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useRef } from "react";
@@ -30,26 +30,26 @@ const CATEGORY_META: Record<
     description: string;
   }
 > = {
-  [Category.homemadeFood]: {
-    label: "Homemade Food",
-    icon: <UtensilsCrossed className="w-5 h-5" />,
+  [Category.monthlyFood]: {
+    label: "Monthly Food",
+    icon: <CalendarDays className="w-5 h-5" />,
     color: "bg-primary/10 text-primary border-primary/20",
-    image: "/assets/generated/homemade-food.dim_600x400.jpg",
-    description: "Cooked fresh daily with love and traditional recipes",
+    image: "/assets/generated/monthly-food.dim_600x400.jpg",
+    description: "Lunch plans starting ₹2000 — Veg & Non-Veg options",
   },
-  [Category.spices]: {
-    label: "Spices",
-    icon: <Flame className="w-5 h-5" />,
+  [Category.specialPerKg]: {
+    label: "Special / Per Kg Menu",
+    icon: <ChefHat className="w-5 h-5" />,
     color: "bg-orange-100 text-orange-700 border-orange-200",
-    image: "/assets/generated/spices.dim_600x400.jpg",
-    description: "Pure, aromatic spices ground fresh for maximum flavour",
+    image: "/assets/generated/special-per-kg.dim_600x400.jpg",
+    description: "Made with homemade spices — Rice, Biryani, Chicken & Mutton",
   },
-  [Category.freshVegetables]: {
-    label: "Fresh Vegetables",
-    icon: <Leaf className="w-5 h-5" />,
+  [Category.gymProtein]: {
+    label: "Gym & Protein Menu",
+    icon: <Dumbbell className="w-5 h-5" />,
     color: "bg-green-100 text-green-700 border-green-200",
-    image: "/assets/generated/fresh-vegetables.dim_600x400.jpg",
-    description: "Farm-fresh, seasonal vegetables delivered to your door",
+    image: "/assets/generated/gym-protein.dim_600x400.jpg",
+    description: "Salads, sprouted protein bowls & protein shakes",
   },
 };
 
@@ -346,8 +346,8 @@ export default function HomePage({ navigate }: HomePageProps) {
                 </p>
                 <div className="grid grid-cols-3 gap-4 text-center">
                   {[
-                    { number: "3", label: "Category Types" },
-                    { number: "100%", label: "Homemade" },
+                    { number: "₹2000", label: "Monthly Plan" },
+                    { number: "100%", label: "Homemade Spices" },
                     { number: "🏠", label: "Home Delivery" },
                   ].map(({ number, label }) => (
                     <div
@@ -372,22 +372,22 @@ export default function HomePage({ navigate }: HomePageProps) {
               >
                 {[
                   {
-                    img: "/assets/generated/homemade-food.dim_600x400.jpg",
-                    title: "Homemade Food",
-                    desc: "Daily fresh meals",
+                    img: "/assets/generated/monthly-food.dim_600x400.jpg",
+                    title: "Monthly Food",
+                    desc: "From ₹2000/month",
+                    icon: "🍱",
+                  },
+                  {
+                    img: "/assets/generated/gym-protein.dim_600x400.jpg",
+                    title: "Gym & Protein",
+                    desc: "Healthy bowls",
+                    icon: "💪",
+                  },
+                  {
+                    img: "/assets/generated/special-per-kg.dim_600x400.jpg",
+                    title: "Special Menu",
+                    desc: "Homemade spices",
                     icon: "🍛",
-                  },
-                  {
-                    img: "/assets/generated/spices.dim_600x400.jpg",
-                    title: "Pure Spices",
-                    desc: "Freshly ground",
-                    icon: "🌶️",
-                  },
-                  {
-                    img: "/assets/generated/fresh-vegetables.dim_600x400.jpg",
-                    title: "Fresh Vegetables",
-                    desc: "Farm to table",
-                    icon: "🥦",
                     className: "col-span-2",
                   },
                 ].map(({ img, title, desc, icon, className }) => (
@@ -505,7 +505,7 @@ export default function HomePage({ navigate }: HomePageProps) {
                 menuCategories.map(([category, items], catIdx) => {
                   const meta = CATEGORY_META[category] ?? {
                     label: category,
-                    icon: <UtensilsCrossed className="w-5 h-5" />,
+                    icon: <ChefHat className="w-5 h-5" />,
                     color: "bg-muted text-foreground border-border",
                     image: "",
                     description: "",

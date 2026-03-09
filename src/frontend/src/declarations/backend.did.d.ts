@@ -10,9 +10,9 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
-export type Category = { 'homemadeFood' : null } |
-  { 'freshVegetables' : null } |
-  { 'spices' : null };
+export type Category = { 'specialPerKg' : null } |
+  { 'gymProtein' : null } |
+  { 'monthlyFood' : null };
 export interface MenuItem {
   'name' : string,
   'description' : string,

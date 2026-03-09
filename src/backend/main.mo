@@ -8,6 +8,8 @@ import Runtime "mo:core/Runtime";
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
 
+
+
 actor {
   // Menu item type definition
   public type MenuItem = {
@@ -19,9 +21,9 @@ actor {
   };
 
   public type Category = {
-    #homemadeFood;
-    #spices;
-    #freshVegetables;
+    #monthlyFood;
+    #specialPerKg;
+    #gymProtein;
   };
 
   // User profile type
@@ -33,9 +35,9 @@ actor {
   module Category {
     public func toText(category : Category) : Text {
       switch (category) {
-        case (#homemadeFood) { "Homemade Food" };
-        case (#spices) { "Spices" };
-        case (#freshVegetables) { "Fresh Vegetables" };
+        case (#monthlyFood) { "Monthly Food" };
+        case (#specialPerKg) { "Special Per Kg" };
+        case (#gymProtein) { "Gym Protein" };
       };
     };
 
@@ -89,90 +91,120 @@ actor {
       (
         nextItemId,
         {
-          name = "Roti Chawal";
-          description = "Homemade roti with fresh steamed rice";
-          price = 1200;
-          category = #homemadeFood;
+          name = "Monthly Meal Plan (Veg)";
+          description = "Lunch only, 3 days/week veg meals";
+          price = 2000;
+          category = #monthlyFood;
           available = true;
         },
       ),
       (
         nextItemId + 1,
         {
-          name = "Chicken Biryani";
-          description = "Traditional biryani with tender chicken";
-          price = 2200;
-          category = #homemadeFood;
+          name = "Monthly Meal Plan (Non-Veg)";
+          description = "Lunch only, 3 days fish/egg + 1 day chicken per week";
+          price = 2500;
+          category = #monthlyFood;
           available = true;
         },
       ),
       (
         nextItemId + 2,
         {
-          name = "Chicken Curry";
-          description = "Savory chicken curry with aromatic spices";
-          price = 2600;
-          category = #homemadeFood;
+          name = "Fried Rice";
+          description = "Freshly prepared fried rice with homemade spices";
+          price = 180;
+          category = #specialPerKg;
           available = true;
         },
       ),
       (
         nextItemId + 3,
         {
-          name = "Shahi Daal";
-          description = "Traditional lentil curry with premium ingredients";
-          price = 1500;
-          category = #homemadeFood;
+          name = "Mixed Fried Rice";
+          description = "Mixed vegetables and egg fried rice with homemade spices";
+          price = 200;
+          category = #specialPerKg;
           available = true;
         },
       ),
       (
         nextItemId + 4,
         {
-          name = "Kitchen King Masala";
-          description = "Premium spice blend for vegetables and curries";
-          price = 600;
-          category = #spices;
+          name = "Polao";
+          description = "Fragrant rice dish cooked with homemade spices";
+          price = 200;
+          category = #specialPerKg;
           available = true;
         },
       ),
       (
         nextItemId + 5,
         {
-          name = "Garam Masala";
-          description = "Aromatic blend of whole spices for Indian cuisine";
-          price = 225;
-          category = #spices;
+          name = "Chicken Recipe (Signature)";
+          description = "Various signature chicken preparations";
+          price = 350;
+          category = #specialPerKg;
           available = true;
         },
       ),
       (
         nextItemId + 6,
         {
-          name = "Dhania Delight";
-          description = "Finely ground coriander spice blend";
-          price = 300;
-          category = #spices;
+          name = "Chicken Biryani";
+          description = "Aromatic biryani with tender chicken and homemade spices";
+          price = 380;
+          category = #specialPerKg;
           available = true;
         },
       ),
       (
         nextItemId + 7,
         {
-          name = "Fresh Tomatoes";
-          description = "Farm-fresh, juicy tomatoes";
-          price = 90;
-          category = #freshVegetables;
+          name = "Mutton (500g also available)";
+          description = "Slow-cooked mutton with homemade spices, 500g portion also available";
+          price = 500;
+          category = #specialPerKg;
           available = true;
         },
       ),
       (
         nextItemId + 8,
         {
-          name = "Eggplant Delight";
-          description = "Premium quality, firm baby eggplants";
+          name = "Veg Salad";
+          description = "Fresh seasonal vegetables salad";
+          price = 80;
+          category = #gymProtein;
+          available = true;
+        },
+      ),
+      (
+        nextItemId + 9,
+        {
+          name = "Fruit Salad";
+          description = "Assorted fresh fruits salad";
+          price = 100;
+          category = #gymProtein;
+          available = true;
+        },
+      ),
+      (
+        nextItemId + 10,
+        {
+          name = "Protein Salad";
+          description = "Sprouted or soaked kala chana and green moong protein salad";
           price = 120;
-          category = #freshVegetables;
+          category = #gymProtein;
+          available = true;
+        },
+      ),
+      (
+        nextItemId + 11,
+        {
+          name = "Protein Shake";
+          description = "Nutritious protein shake for fitness goals";
+          price = 100;
+          category = #gymProtein;
           available = true;
         },
       ),
@@ -196,7 +228,6 @@ actor {
   };
 
   // Admin functions for menu item management
-  // Admin convenience function: CRUD for persistent store
   public shared ({ caller }) func addPersistentMenuItem(menuItem : MenuItem) : async Nat {
     if (not (AccessControl.isAdmin(accessControlState, caller))) {
       Runtime.trap("Unauthorized: Only admins can perform this action");
@@ -248,7 +279,7 @@ actor {
   };
 
   public query func getAllPersistentMenuItemsByCategory() : async [(Category, [MenuItem])] {
-    let categories : [Category] = [#homemadeFood, #spices, #freshVegetables];
+    let categories : [Category] = [#monthlyFood, #specialPerKg, #gymProtein];
     categories.map<Category, (Category, [MenuItem])>(
       func(cat) {
         (

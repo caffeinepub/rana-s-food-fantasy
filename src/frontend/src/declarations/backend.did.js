@@ -9,9 +9,9 @@
 import { IDL } from '@icp-sdk/core/candid';
 
 export const Category = IDL.Variant({
-  'homemadeFood' : IDL.Null,
-  'freshVegetables' : IDL.Null,
-  'spices' : IDL.Null,
+  'specialPerKg' : IDL.Null,
+  'gymProtein' : IDL.Null,
+  'monthlyFood' : IDL.Null,
 });
 export const MenuItem = IDL.Record({
   'name' : IDL.Text,
@@ -61,9 +61,9 @@ export const idlInitArgs = [];
 
 export const idlFactory = ({ IDL }) => {
   const Category = IDL.Variant({
-    'homemadeFood' : IDL.Null,
-    'freshVegetables' : IDL.Null,
-    'spices' : IDL.Null,
+    'specialPerKg' : IDL.Null,
+    'gymProtein' : IDL.Null,
+    'monthlyFood' : IDL.Null,
   });
   const MenuItem = IDL.Record({
     'name' : IDL.Text,
