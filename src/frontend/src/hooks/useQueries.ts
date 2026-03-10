@@ -6,15 +6,23 @@ import { useActor } from "./useActor";
 export type { MenuItem };
 export { Category };
 
+// MenuItemWithId uses array index as the id field (bigint)
+export type MenuItemWithId = { id: bigint } & MenuItem;
+
 // ─── Menu Queries ────────────────────────────────────────────────────────────
 
 export function useGetAllMenuItemsByCategory() {
   const { actor, isFetching } = useActor();
-  return useQuery<Array<[Category, Array<MenuItem>]>>({
+  return useQuery<Array<[Category, Array<MenuItemWithId>]>>({
     queryKey: ["menuItemsByCategory"],
     queryFn: async () => {
       if (!actor) return [];
-      return actor.getAllPersistentMenuItemsByCategory();
+      const raw = await actor.getAllPersistentMenuItemsByCategory();
+      let globalIdx = 0;
+      return raw.map(([category, items]): [Category, Array<MenuItemWithId>] => [
+        category,
+        items.map((item) => ({ id: BigInt(globalIdx++), ...item })),
+      ]);
     },
     enabled: !!actor && !isFetching,
   });
@@ -22,11 +30,12 @@ export function useGetAllMenuItemsByCategory() {
 
 export function useGetAllMenuItems() {
   const { actor, isFetching } = useActor();
-  return useQuery<Array<MenuItem>>({
+  return useQuery<Array<MenuItemWithId>>({
     queryKey: ["allMenuItems"],
     queryFn: async () => {
       if (!actor) return [];
-      return actor.getAllPersistentMenuItems();
+      const raw = await actor.getAllPersistentMenuItems();
+      return raw.map((item, idx) => ({ id: BigInt(idx), ...item }));
     },
     enabled: !!actor && !isFetching,
   });

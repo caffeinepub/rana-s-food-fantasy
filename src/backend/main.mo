@@ -63,6 +63,128 @@ actor {
   // User profiles storage
   let userProfiles = Map.empty<Principal, UserProfile>();
 
+  // Auto-seed menu items on first initialization
+  let defaultItems : [(Nat, MenuItem)] = [
+    (
+      0,
+      {
+        name = "Monthly Meal Plan";
+        description = "Lunch only — Veg + Non-Veg. 3 days veg + 3 days fish/egg + 1 day chicken per week";
+        price = 2000;
+        category = #monthlyFood;
+        available = true;
+      },
+    ),
+    (
+      1,
+      {
+        name = "Fried Rice";
+        description = "Freshly prepared with homemade spices";
+        price = 180;
+        category = #specialPerKg;
+        available = true;
+      },
+    ),
+    (
+      2,
+      {
+        name = "Mixed Fried Rice";
+        description = "Mixed vegetables and egg fried rice with homemade spices";
+        price = 200;
+        category = #specialPerKg;
+        available = true;
+      },
+    ),
+    (
+      3,
+      {
+        name = "Polao";
+        description = "Fragrant rice dish cooked with homemade spices";
+        price = 200;
+        category = #specialPerKg;
+        available = true;
+      },
+    ),
+    (
+      4,
+      {
+        name = "Chicken Recipe (Various)";
+        description = "Various signature chicken preparations using homemade spices";
+        price = 350;
+        category = #specialPerKg;
+        available = true;
+      },
+    ),
+    (
+      5,
+      {
+        name = "Chicken Biryani";
+        description = "Aromatic biryani with tender chicken and homemade spices";
+        price = 380;
+        category = #specialPerKg;
+        available = true;
+      },
+    ),
+    (
+      6,
+      {
+        name = "Mutton";
+        description = "Slow-cooked mutton with homemade spices. 500g portion also available";
+        price = 500;
+        category = #specialPerKg;
+        available = true;
+      },
+    ),
+    (
+      7,
+      {
+        name = "Veg Salad";
+        description = "Fresh seasonal vegetables salad";
+        price = 80;
+        category = #gymProtein;
+        available = true;
+      },
+    ),
+    (
+      8,
+      {
+        name = "Fruit Salad";
+        description = "Assorted fresh fruits salad";
+        price = 100;
+        category = #gymProtein;
+        available = true;
+      },
+    ),
+    (
+      9,
+      {
+        name = "Protein Salad";
+        description = "Sprouted or soaked kala chana and green moong protein salad";
+        price = 120;
+        category = #gymProtein;
+        available = true;
+      },
+    ),
+    (
+      10,
+      {
+        name = "Protein Shake";
+        description = "Nutritious protein shake for fitness goals";
+        price = 100;
+        category = #gymProtein;
+        available = true;
+      },
+    ),
+  ];
+
+  // Initialize with default menu items on first deploy
+  do {
+    for (item in defaultItems.values()) {
+      persistentMenuItems.add(item.0, item.1);
+    };
+    nextItemId := defaultItems.size();
+  };
+
   // User profile management functions
   public query ({ caller }) func getCallerUserProfile() : async ?UserProfile {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
@@ -85,146 +207,17 @@ actor {
     userProfiles.add(caller, profile);
   };
 
-  // Helper function to create sample items for each category
-  func getSampleItems() : [(Nat, MenuItem)] {
-    [
-      (
-        nextItemId,
-        {
-          name = "Monthly Meal Plan (Veg)";
-          description = "Lunch only, 3 days/week veg meals";
-          price = 2000;
-          category = #monthlyFood;
-          available = true;
-        },
-      ),
-      (
-        nextItemId + 1,
-        {
-          name = "Monthly Meal Plan (Non-Veg)";
-          description = "Lunch only, 3 days fish/egg + 1 day chicken per week";
-          price = 2500;
-          category = #monthlyFood;
-          available = true;
-        },
-      ),
-      (
-        nextItemId + 2,
-        {
-          name = "Fried Rice";
-          description = "Freshly prepared fried rice with homemade spices";
-          price = 180;
-          category = #specialPerKg;
-          available = true;
-        },
-      ),
-      (
-        nextItemId + 3,
-        {
-          name = "Mixed Fried Rice";
-          description = "Mixed vegetables and egg fried rice with homemade spices";
-          price = 200;
-          category = #specialPerKg;
-          available = true;
-        },
-      ),
-      (
-        nextItemId + 4,
-        {
-          name = "Polao";
-          description = "Fragrant rice dish cooked with homemade spices";
-          price = 200;
-          category = #specialPerKg;
-          available = true;
-        },
-      ),
-      (
-        nextItemId + 5,
-        {
-          name = "Chicken Recipe (Signature)";
-          description = "Various signature chicken preparations";
-          price = 350;
-          category = #specialPerKg;
-          available = true;
-        },
-      ),
-      (
-        nextItemId + 6,
-        {
-          name = "Chicken Biryani";
-          description = "Aromatic biryani with tender chicken and homemade spices";
-          price = 380;
-          category = #specialPerKg;
-          available = true;
-        },
-      ),
-      (
-        nextItemId + 7,
-        {
-          name = "Mutton (500g also available)";
-          description = "Slow-cooked mutton with homemade spices, 500g portion also available";
-          price = 500;
-          category = #specialPerKg;
-          available = true;
-        },
-      ),
-      (
-        nextItemId + 8,
-        {
-          name = "Veg Salad";
-          description = "Fresh seasonal vegetables salad";
-          price = 80;
-          category = #gymProtein;
-          available = true;
-        },
-      ),
-      (
-        nextItemId + 9,
-        {
-          name = "Fruit Salad";
-          description = "Assorted fresh fruits salad";
-          price = 100;
-          category = #gymProtein;
-          available = true;
-        },
-      ),
-      (
-        nextItemId + 10,
-        {
-          name = "Protein Salad";
-          description = "Sprouted or soaked kala chana and green moong protein salad";
-          price = 120;
-          category = #gymProtein;
-          available = true;
-        },
-      ),
-      (
-        nextItemId + 11,
-        {
-          name = "Protein Shake";
-          description = "Nutritious protein shake for fitness goals";
-          price = 100;
-          category = #gymProtein;
-          available = true;
-        },
-      ),
-    ];
-  };
-
-  // Seed persistent store with sample items on first admin interaction
+  // Seed persistent store with sample items (admin only, for resetting)
   public shared ({ caller }) func seedSampleItems() : async () {
     if (not (AccessControl.isAdmin(accessControlState, caller))) {
       Runtime.trap("Unauthorized: Only admins can perform this action");
     };
 
-    // Add items to persistent store
-    let sampleItems = getSampleItems();
-    for (item in sampleItems.values()) {
+    // Clear existing and re-add default items
+    for (item in defaultItems.values()) {
       persistentMenuItems.add(item.0, item.1);
     };
-
-    // Update item ID counter
-    nextItemId += sampleItems.size();
+    nextItemId := defaultItems.size();
   };
 
   // Admin functions for menu item management
@@ -274,18 +267,18 @@ actor {
     );
   };
 
-  public query func getAllPersistentMenuItems() : async [MenuItem] {
-    persistentMenuItems.values().toArray().sort<MenuItem>();
+  public query func getAllPersistentMenuItems() : async [(Nat, MenuItem)] {
+    persistentMenuItems.entries().toArray();
   };
 
-  public query func getAllPersistentMenuItemsByCategory() : async [(Category, [MenuItem])] {
+  public query func getAllPersistentMenuItemsByCategory() : async [(Category, [(Nat, MenuItem)])] {
     let categories : [Category] = [#monthlyFood, #specialPerKg, #gymProtein];
-    categories.map<Category, (Category, [MenuItem])>(
+    categories.map<Category, (Category, [(Nat, MenuItem)])>(
       func(cat) {
         (
           cat,
-          persistentMenuItems.values().toArray().filter<MenuItem>(
-            func(item) { item.category == cat }
+          persistentMenuItems.entries().toArray().filter<(Nat, MenuItem)>(
+            func(entry) { entry.1.category == cat }
           )
         )
       }

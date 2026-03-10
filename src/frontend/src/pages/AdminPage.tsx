@@ -58,7 +58,7 @@ import {
   useSeedSampleItems,
   useUpdateMenuItem,
 } from "../hooks/useQueries";
-import type { MenuItem } from "../hooks/useQueries";
+import type { MenuItem, MenuItemWithId } from "../hooks/useQueries";
 
 interface AdminPageProps {
   navigate: (path: string) => void;
@@ -195,7 +195,7 @@ export default function AdminPage({ navigate }: AdminPageProps) {
   const seedMutation = useSeedSampleItems();
 
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [editingId, setEditingId] = useState<bigint | null>(null);
   const [form, setForm] = useState<FormData>(EMPTY_FORM);
   const [formError, setFormError] = useState("");
 
@@ -239,12 +239,12 @@ export default function AdminPage({ navigate }: AdminPageProps) {
 
   const openAddForm = () => {
     setForm(EMPTY_FORM);
-    setEditingIndex(null);
+    setEditingId(null);
     setFormError("");
     setIsFormOpen(true);
   };
 
-  const openEditForm = (item: MenuItem, idx: number) => {
+  const openEditForm = (item: MenuItemWithId) => {
     setForm({
       name: item.name,
       description: item.description,
@@ -252,7 +252,7 @@ export default function AdminPage({ navigate }: AdminPageProps) {
       category: item.category,
       available: item.available,
     });
-    setEditingIndex(idx);
+    setEditingId(item.id);
     setFormError("");
     setIsFormOpen(true);
   };
@@ -269,12 +269,9 @@ export default function AdminPage({ navigate }: AdminPageProps) {
     };
 
     try {
-      if (editingIndex !== null && menuItems) {
-        // We need the id — for now we'll use index-based re-fetch
-        // Since the backend uses BigInt IDs, we fetch by getting the item at that index
-        // Use index as a proxy — this assumes ordering matches
+      if (editingId !== null) {
         await updateMutation.mutateAsync({
-          id: BigInt(editingIndex),
+          id: editingId,
           menuItem,
         });
         toast.success("Menu item updated!");
@@ -291,9 +288,9 @@ export default function AdminPage({ navigate }: AdminPageProps) {
     }
   };
 
-  const handleDelete = async (idx: number) => {
+  const handleDelete = async (id: bigint) => {
     try {
-      await deleteMutation.mutateAsync(BigInt(idx));
+      await deleteMutation.mutateAsync(id);
       toast.success("Item deleted");
     } catch {
       toast.error("Failed to delete item");
@@ -337,6 +334,10 @@ export default function AdminPage({ navigate }: AdminPageProps) {
             <div className="flex items-center gap-2">
               <img
                 src="/assets/uploads/IMG-20260221-WA0013-1.jpg"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src =
+                    "/assets/IMG-20260221-WA0013-1.jpg";
+                }}
                 alt="Logo"
                 className="w-7 h-7 rounded-full object-cover"
               />
@@ -572,7 +573,7 @@ export default function AdminPage({ navigate }: AdminPageProps) {
                             size="sm"
                             variant="ghost"
                             className="h-8 w-8 p-0 hover:bg-primary/10 hover:text-primary"
-                            onClick={() => openEditForm(item, idx)}
+                            onClick={() => openEditForm(item)}
                             data-ocid={`admin.edit_button.${idx + 1}`}
                           >
                             <Pencil className="w-3.5 h-3.5" />
@@ -607,7 +608,7 @@ export default function AdminPage({ navigate }: AdminPageProps) {
                                 </AlertDialogCancel>
                                 <AlertDialogAction
                                   className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
-                                  onClick={() => handleDelete(idx)}
+                                  onClick={() => handleDelete(item.id)}
                                   data-ocid="admin.confirm_button"
                                 >
                                   {deleteMutation.isPending ? (
@@ -635,7 +636,7 @@ export default function AdminPage({ navigate }: AdminPageProps) {
         <DialogContent className="max-w-lg" data-ocid="admin.modal">
           <DialogHeader>
             <DialogTitle className="font-display text-xl">
-              {editingIndex !== null ? "Edit Menu Item" : "Add New Menu Item"}
+              {editingId !== null ? "Edit Menu Item" : "Add New Menu Item"}
             </DialogTitle>
           </DialogHeader>
 
@@ -760,7 +761,7 @@ export default function AdminPage({ navigate }: AdminPageProps) {
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                   Saving...
                 </>
-              ) : editingIndex !== null ? (
+              ) : editingId !== null ? (
                 "Save Changes"
               ) : (
                 "Add Item"

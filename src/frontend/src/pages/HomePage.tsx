@@ -14,7 +14,7 @@ import {
 import { AnimatePresence, motion } from "motion/react";
 import { useRef } from "react";
 import { Category, useGetAllMenuItemsByCategory } from "../hooks/useQueries";
-import type { MenuItem } from "../hooks/useQueries";
+import type { MenuItemWithId } from "../hooks/useQueries";
 
 interface HomePageProps {
   navigate: (path: string) => void;
@@ -98,6 +98,10 @@ export default function HomePage({ navigate }: HomePageProps) {
           >
             <img
               src="/assets/uploads/IMG-20260221-WA0013-1.jpg"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src =
+                  "/assets/IMG-20260221-WA0013-1.jpg";
+              }}
               alt="Rana's Food Fantasy Logo"
               className="h-10 w-10 rounded-full object-cover ring-2 ring-primary/30 group-hover:ring-primary/60 transition-all"
             />
@@ -232,6 +236,10 @@ export default function HomePage({ navigate }: HomePageProps) {
               >
                 <img
                   src="/assets/uploads/IMG-20260221-WA0013-1.jpg"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src =
+                      "/assets/IMG-20260221-WA0013-1.jpg";
+                  }}
                   alt="Rana's Food Fantasy"
                   className="w-20 h-20 rounded-full object-cover ring-4 ring-primary/40 shadow-warm"
                 />
@@ -535,7 +543,7 @@ export default function HomePage({ navigate }: HomePageProps) {
 
                       {/* Items Grid */}
                       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {items.map((item: MenuItem, idx: number) => (
+                        {items.map((item: MenuItemWithId, idx: number) => (
                           <motion.div
                             key={`${category}-${item.name}`}
                             data-ocid={`menu.item.${catIdx * 10 + idx + 1}`}
@@ -766,6 +774,10 @@ export default function HomePage({ navigate }: HomePageProps) {
             <div className="flex items-center gap-3">
               <img
                 src="/assets/uploads/IMG-20260221-WA0013-1.jpg"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src =
+                    "/assets/IMG-20260221-WA0013-1.jpg";
+                }}
                 alt="Rana's Food Fantasy"
                 className="w-7 h-7 rounded-full object-cover opacity-80"
               />
