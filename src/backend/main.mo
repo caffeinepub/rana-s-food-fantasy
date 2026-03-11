@@ -8,10 +8,7 @@ import Runtime "mo:core/Runtime";
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
 
-
-
 actor {
-  // Menu item type definition
   public type MenuItem = {
     name : Text;
     description : Text;
@@ -26,12 +23,10 @@ actor {
     #gymProtein;
   };
 
-  // User profile type (kept for stable variable compatibility)
   public type UserProfile = {
     name : Text;
   };
 
-  // Convert category to text for comparison
   module Category {
     public func toText(category : Category) : Text {
       switch (category) {
@@ -53,14 +48,14 @@ actor {
   };
 
   // Store menu items in a persistent Map with Id as key
-  stable var nextItemId = 0;
-  stable let persistentMenuItems = Map.empty<Nat, MenuItem>();
+  var nextItemId = 0;
+  let persistentMenuItems = Map.empty<Nat, MenuItem>();
 
-  // Authorization system (kept for stable variable compatibility — not used for menu auth)
+  // Authorization system
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
 
-  // User profiles storage (kept for stable variable compatibility)
+  // User profiles storage
   let userProfiles = Map.empty<Principal, UserProfile>();
 
   // Default menu items

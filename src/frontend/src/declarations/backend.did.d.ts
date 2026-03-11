@@ -20,7 +20,6 @@ export interface MenuItem {
   'category' : Category,
   'price' : bigint,
 }
-export interface UserProfile { 'name' : string }
 export type UserRole = { 'admin' : null } |
   { 'user' : null } |
   { 'guest' : null };
@@ -29,18 +28,15 @@ export interface _SERVICE {
   'addPersistentMenuItem' : ActorMethod<[MenuItem], bigint>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
   'deletePersistentMenuItem' : ActorMethod<[bigint], undefined>,
-  'getAllPersistentMenuItems' : ActorMethod<[], Array<MenuItem>>,
+  'getAllPersistentMenuItems' : ActorMethod<[], Array<[bigint, MenuItem]>>,
   'getAllPersistentMenuItemsByCategory' : ActorMethod<
     [],
-    Array<[Category, Array<MenuItem>]>
+    Array<[Category, Array<[bigint, MenuItem]>]>
   >,
-  'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getPersistentMenuItem' : ActorMethod<[bigint], MenuItem>,
   'getPersistentMenuItemsByCategory' : ActorMethod<[Category], Array<MenuItem>>,
-  'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
-  'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
   'seedSampleItems' : ActorMethod<[], undefined>,
   'updatePersistentMenuItem' : ActorMethod<[bigint, MenuItem], undefined>,
 }

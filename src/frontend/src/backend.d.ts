@@ -14,9 +14,6 @@ export interface MenuItem {
     category: Category;
     price: bigint;
 }
-export interface UserProfile {
-    name: string;
-}
 export enum Category {
     specialPerKg = "specialPerKg",
     gymProtein = "gymProtein",
@@ -33,13 +30,10 @@ export interface backendInterface {
     deletePersistentMenuItem(id: bigint): Promise<void>;
     getAllPersistentMenuItems(): Promise<Array<[bigint, MenuItem]>>;
     getAllPersistentMenuItemsByCategory(): Promise<Array<[Category, Array<[bigint, MenuItem]>]>>;
-    getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
     getPersistentMenuItem(id: bigint): Promise<MenuItem>;
     getPersistentMenuItemsByCategory(category: Category): Promise<Array<MenuItem>>;
-    getUserProfile(user: Principal): Promise<UserProfile | null>;
     isCallerAdmin(): Promise<boolean>;
-    saveCallerUserProfile(profile: UserProfile): Promise<void>;
     seedSampleItems(): Promise<void>;
     updatePersistentMenuItem(id: bigint, menuItem: MenuItem): Promise<void>;
 }

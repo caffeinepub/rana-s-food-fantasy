@@ -96,9 +96,6 @@ export interface MenuItem {
     category: Category;
     price: bigint;
 }
-export interface UserProfile {
-    name: string;
-}
 export enum Category {
     specialPerKg = "specialPerKg",
     gymProtein = "gymProtein",
@@ -114,19 +111,16 @@ export interface backendInterface {
     addPersistentMenuItem(menuItem: MenuItem): Promise<bigint>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     deletePersistentMenuItem(id: bigint): Promise<void>;
-    getAllPersistentMenuItems(): Promise<Array<MenuItem>>;
-    getAllPersistentMenuItemsByCategory(): Promise<Array<[Category, Array<MenuItem>]>>;
-    getCallerUserProfile(): Promise<UserProfile | null>;
+    getAllPersistentMenuItems(): Promise<Array<[bigint, MenuItem]>>;
+    getAllPersistentMenuItemsByCategory(): Promise<Array<[Category, Array<[bigint, MenuItem]>]>>;
     getCallerUserRole(): Promise<UserRole>;
     getPersistentMenuItem(id: bigint): Promise<MenuItem>;
     getPersistentMenuItemsByCategory(category: Category): Promise<Array<MenuItem>>;
-    getUserProfile(user: Principal): Promise<UserProfile | null>;
     isCallerAdmin(): Promise<boolean>;
-    saveCallerUserProfile(profile: UserProfile): Promise<void>;
     seedSampleItems(): Promise<void>;
     updatePersistentMenuItem(id: bigint, menuItem: MenuItem): Promise<void>;
 }
-import type { Category as _Category, MenuItem as _MenuItem, UserProfile as _UserProfile, UserRole as _UserRole } from "./declarations/backend.did.d.ts";
+import type { Category as _Category, MenuItem as _MenuItem, UserRole as _UserRole } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
     constructor(private actor: ActorSubclass<_SERVICE>, private _uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, private _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, private processError?: (error: unknown) => never){}
     async _initializeAccessControlWithSecret(arg0: string): Promise<void> {
@@ -185,7 +179,7 @@ export class Backend implements backendInterface {
             return result;
         }
     }
-    async getAllPersistentMenuItems(): Promise<Array<MenuItem>> {
+    async getAllPersistentMenuItems(): Promise<Array<[bigint, MenuItem]>> {
         if (this.processError) {
             try {
                 const result = await this.actor.getAllPersistentMenuItems();
@@ -199,32 +193,18 @@ export class Backend implements backendInterface {
             return from_candid_vec_n7(this._uploadFile, this._downloadFile, result);
         }
     }
-    async getAllPersistentMenuItemsByCategory(): Promise<Array<[Category, Array<MenuItem>]>> {
+    async getAllPersistentMenuItemsByCategory(): Promise<Array<[Category, Array<[bigint, MenuItem]>]>> {
         if (this.processError) {
             try {
                 const result = await this.actor.getAllPersistentMenuItemsByCategory();
-                return from_candid_vec_n12(this._uploadFile, this._downloadFile, result);
+                return from_candid_vec_n13(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
             const result = await this.actor.getAllPersistentMenuItemsByCategory();
-            return from_candid_vec_n12(this._uploadFile, this._downloadFile, result);
-        }
-    }
-    async getCallerUserProfile(): Promise<UserProfile | null> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.getCallerUserProfile();
-                return from_candid_opt_n14(this._uploadFile, this._downloadFile, result);
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.getCallerUserProfile();
-            return from_candid_opt_n14(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n13(this._uploadFile, this._downloadFile, result);
         }
     }
     async getCallerUserRole(): Promise<UserRole> {
@@ -245,42 +225,28 @@ export class Backend implements backendInterface {
         if (this.processError) {
             try {
                 const result = await this.actor.getPersistentMenuItem(arg0);
-                return from_candid_MenuItem_n8(this._uploadFile, this._downloadFile, result);
+                return from_candid_MenuItem_n9(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
             const result = await this.actor.getPersistentMenuItem(arg0);
-            return from_candid_MenuItem_n8(this._uploadFile, this._downloadFile, result);
+            return from_candid_MenuItem_n9(this._uploadFile, this._downloadFile, result);
         }
     }
     async getPersistentMenuItemsByCategory(arg0: Category): Promise<Array<MenuItem>> {
         if (this.processError) {
             try {
                 const result = await this.actor.getPersistentMenuItemsByCategory(to_candid_Category_n3(this._uploadFile, this._downloadFile, arg0));
-                return from_candid_vec_n7(this._uploadFile, this._downloadFile, result);
+                return from_candid_vec_n17(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
             const result = await this.actor.getPersistentMenuItemsByCategory(to_candid_Category_n3(this._uploadFile, this._downloadFile, arg0));
-            return from_candid_vec_n7(this._uploadFile, this._downloadFile, result);
-        }
-    }
-    async getUserProfile(arg0: Principal): Promise<UserProfile | null> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.getUserProfile(arg0);
-                return from_candid_opt_n14(this._uploadFile, this._downloadFile, result);
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.getUserProfile(arg0);
-            return from_candid_opt_n14(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n17(this._uploadFile, this._downloadFile, result);
         }
     }
     async isCallerAdmin(): Promise<boolean> {
@@ -294,20 +260,6 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.isCallerAdmin();
-            return result;
-        }
-    }
-    async saveCallerUserProfile(arg0: UserProfile): Promise<void> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.saveCallerUserProfile(arg0);
-                return result;
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.saveCallerUserProfile(arg0);
             return result;
         }
     }
@@ -340,19 +292,16 @@ export class Backend implements backendInterface {
         }
     }
 }
-function from_candid_Category_n10(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _Category): Category {
-    return from_candid_variant_n11(_uploadFile, _downloadFile, value);
+function from_candid_Category_n11(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _Category): Category {
+    return from_candid_variant_n12(_uploadFile, _downloadFile, value);
 }
-function from_candid_MenuItem_n8(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _MenuItem): MenuItem {
-    return from_candid_record_n9(_uploadFile, _downloadFile, value);
+function from_candid_MenuItem_n9(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _MenuItem): MenuItem {
+    return from_candid_record_n10(_uploadFile, _downloadFile, value);
 }
 function from_candid_UserRole_n15(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _UserRole): UserRole {
     return from_candid_variant_n16(_uploadFile, _downloadFile, value);
 }
-function from_candid_opt_n14(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_UserProfile]): UserProfile | null {
-    return value.length === 0 ? null : value[0];
-}
-function from_candid_record_n9(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+function from_candid_record_n10(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     name: string;
     description: string;
     available: boolean;
@@ -369,17 +318,23 @@ function from_candid_record_n9(_uploadFile: (file: ExternalBlob) => Promise<Uint
         name: value.name,
         description: value.description,
         available: value.available,
-        category: from_candid_Category_n10(_uploadFile, _downloadFile, value.category),
+        category: from_candid_Category_n11(_uploadFile, _downloadFile, value.category),
         price: value.price
     };
 }
-function from_candid_tuple_n13(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [_Category, Array<_MenuItem>]): [Category, Array<MenuItem>] {
+function from_candid_tuple_n14(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [_Category, Array<[bigint, _MenuItem]>]): [Category, Array<[bigint, MenuItem]>] {
     return [
-        from_candid_Category_n10(_uploadFile, _downloadFile, value[0]),
+        from_candid_Category_n11(_uploadFile, _downloadFile, value[0]),
         from_candid_vec_n7(_uploadFile, _downloadFile, value[1])
     ];
 }
-function from_candid_variant_n11(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+function from_candid_tuple_n8(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [bigint, _MenuItem]): [bigint, MenuItem] {
+    return [
+        value[0],
+        from_candid_MenuItem_n9(_uploadFile, _downloadFile, value[1])
+    ];
+}
+function from_candid_variant_n12(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     specialPerKg: null;
 } | {
     gymProtein: null;
@@ -397,11 +352,14 @@ function from_candid_variant_n16(_uploadFile: (file: ExternalBlob) => Promise<Ui
 }): UserRole {
     return "admin" in value ? UserRole.admin : "user" in value ? UserRole.user : "guest" in value ? UserRole.guest : value;
 }
-function from_candid_vec_n12(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<[_Category, Array<_MenuItem>]>): Array<[Category, Array<MenuItem>]> {
-    return value.map((x)=>from_candid_tuple_n13(_uploadFile, _downloadFile, x));
+function from_candid_vec_n13(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<[_Category, Array<[bigint, _MenuItem]>]>): Array<[Category, Array<[bigint, MenuItem]>]> {
+    return value.map((x)=>from_candid_tuple_n14(_uploadFile, _downloadFile, x));
 }
-function from_candid_vec_n7(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_MenuItem>): Array<MenuItem> {
-    return value.map((x)=>from_candid_MenuItem_n8(_uploadFile, _downloadFile, x));
+function from_candid_vec_n17(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_MenuItem>): Array<MenuItem> {
+    return value.map((x)=>from_candid_MenuItem_n9(_uploadFile, _downloadFile, x));
+}
+function from_candid_vec_n7(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<[bigint, _MenuItem]>): Array<[bigint, MenuItem]> {
+    return value.map((x)=>from_candid_tuple_n8(_uploadFile, _downloadFile, x));
 }
 function to_candid_Category_n3(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Category): _Category {
     return to_candid_variant_n4(_uploadFile, _downloadFile, value);

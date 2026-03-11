@@ -17,13 +17,10 @@ export function useGetAllMenuItemsByCategory() {
     queryKey: ["menuItemsByCategory"],
     queryFn: async () => {
       if (!actor) return [];
-      const raw =
-        (await actor.getAllPersistentMenuItemsByCategory()) as unknown as Array<
-          [Category, Array<[bigint, MenuItem]>]
-        >;
+      const raw = await actor.getAllPersistentMenuItemsByCategory();
       return raw.map(([category, items]): [Category, Array<MenuItemWithId>] => [
         category,
-        items.map((entry) => ({ id: entry[0], ...entry[1] })),
+        items.map(([id, item]) => ({ id, ...item })),
       ]);
     },
     enabled: !!actor && !isFetching,
@@ -36,10 +33,8 @@ export function useGetAllMenuItems() {
     queryKey: ["allMenuItems"],
     queryFn: async () => {
       if (!actor) return [];
-      const raw = (await actor.getAllPersistentMenuItems()) as unknown as Array<
-        [bigint, MenuItem]
-      >;
-      return raw.map((entry) => ({ id: entry[0], ...entry[1] }));
+      const raw = await actor.getAllPersistentMenuItems();
+      return raw.map(([id, item]) => ({ id, ...item }));
     },
     enabled: !!actor && !isFetching,
   });

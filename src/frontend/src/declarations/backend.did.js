@@ -25,20 +25,22 @@ export const UserRole = IDL.Variant({
   'user' : IDL.Null,
   'guest' : IDL.Null,
 });
-export const UserProfile = IDL.Record({ 'name' : IDL.Text });
 
 export const idlService = IDL.Service({
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
   'addPersistentMenuItem' : IDL.Func([MenuItem], [IDL.Nat], []),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
   'deletePersistentMenuItem' : IDL.Func([IDL.Nat], [], []),
-  'getAllPersistentMenuItems' : IDL.Func([], [IDL.Vec(MenuItem)], ['query']),
-  'getAllPersistentMenuItemsByCategory' : IDL.Func(
+  'getAllPersistentMenuItems' : IDL.Func(
       [],
-      [IDL.Vec(IDL.Tuple(Category, IDL.Vec(MenuItem)))],
+      [IDL.Vec(IDL.Tuple(IDL.Nat, MenuItem))],
       ['query'],
     ),
-  'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
+  'getAllPersistentMenuItemsByCategory' : IDL.Func(
+      [],
+      [IDL.Vec(IDL.Tuple(Category, IDL.Vec(IDL.Tuple(IDL.Nat, MenuItem))))],
+      ['query'],
+    ),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
   'getPersistentMenuItem' : IDL.Func([IDL.Nat], [MenuItem], ['query']),
   'getPersistentMenuItemsByCategory' : IDL.Func(
@@ -46,13 +48,7 @@ export const idlService = IDL.Service({
       [IDL.Vec(MenuItem)],
       ['query'],
     ),
-  'getUserProfile' : IDL.Func(
-      [IDL.Principal],
-      [IDL.Opt(UserProfile)],
-      ['query'],
-    ),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
-  'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
   'seedSampleItems' : IDL.Func([], [], []),
   'updatePersistentMenuItem' : IDL.Func([IDL.Nat, MenuItem], [], []),
 });
@@ -77,20 +73,22 @@ export const idlFactory = ({ IDL }) => {
     'user' : IDL.Null,
     'guest' : IDL.Null,
   });
-  const UserProfile = IDL.Record({ 'name' : IDL.Text });
   
   return IDL.Service({
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
     'addPersistentMenuItem' : IDL.Func([MenuItem], [IDL.Nat], []),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
     'deletePersistentMenuItem' : IDL.Func([IDL.Nat], [], []),
-    'getAllPersistentMenuItems' : IDL.Func([], [IDL.Vec(MenuItem)], ['query']),
-    'getAllPersistentMenuItemsByCategory' : IDL.Func(
+    'getAllPersistentMenuItems' : IDL.Func(
         [],
-        [IDL.Vec(IDL.Tuple(Category, IDL.Vec(MenuItem)))],
+        [IDL.Vec(IDL.Tuple(IDL.Nat, MenuItem))],
         ['query'],
       ),
-    'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
+    'getAllPersistentMenuItemsByCategory' : IDL.Func(
+        [],
+        [IDL.Vec(IDL.Tuple(Category, IDL.Vec(IDL.Tuple(IDL.Nat, MenuItem))))],
+        ['query'],
+      ),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
     'getPersistentMenuItem' : IDL.Func([IDL.Nat], [MenuItem], ['query']),
     'getPersistentMenuItemsByCategory' : IDL.Func(
@@ -98,13 +96,7 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Vec(MenuItem)],
         ['query'],
       ),
-    'getUserProfile' : IDL.Func(
-        [IDL.Principal],
-        [IDL.Opt(UserProfile)],
-        ['query'],
-      ),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
-    'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
     'seedSampleItems' : IDL.Func([], [], []),
     'updatePersistentMenuItem' : IDL.Func([IDL.Nat, MenuItem], [], []),
   });
