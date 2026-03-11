@@ -31,8 +31,8 @@ export interface backendInterface {
     addPersistentMenuItem(menuItem: MenuItem): Promise<bigint>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     deletePersistentMenuItem(id: bigint): Promise<void>;
-    getAllPersistentMenuItems(): Promise<Array<MenuItem>>;
-    getAllPersistentMenuItemsByCategory(): Promise<Array<[Category, Array<MenuItem>]>>;
+    getAllPersistentMenuItems(): Promise<Array<[bigint, MenuItem]>>;
+    getAllPersistentMenuItemsByCategory(): Promise<Array<[Category, Array<[bigint, MenuItem]>]>>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
     getPersistentMenuItem(id: bigint): Promise<MenuItem>;

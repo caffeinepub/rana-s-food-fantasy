@@ -6,7 +6,7 @@ import { useActor } from "./useActor";
 export type { MenuItem };
 export { Category };
 
-// MenuItemWithId uses array index as the id field (bigint)
+// MenuItemWithId includes the real backend ID
 export type MenuItemWithId = { id: bigint } & MenuItem;
 
 // ─── Menu Queries ────────────────────────────────────────────────────────────
@@ -17,11 +17,13 @@ export function useGetAllMenuItemsByCategory() {
     queryKey: ["menuItemsByCategory"],
     queryFn: async () => {
       if (!actor) return [];
-      const raw = await actor.getAllPersistentMenuItemsByCategory();
-      let globalIdx = 0;
+      const raw =
+        (await actor.getAllPersistentMenuItemsByCategory()) as unknown as Array<
+          [Category, Array<[bigint, MenuItem]>]
+        >;
       return raw.map(([category, items]): [Category, Array<MenuItemWithId>] => [
         category,
-        items.map((item) => ({ id: BigInt(globalIdx++), ...item })),
+        items.map((entry) => ({ id: entry[0], ...entry[1] })),
       ]);
     },
     enabled: !!actor && !isFetching,
@@ -34,8 +36,10 @@ export function useGetAllMenuItems() {
     queryKey: ["allMenuItems"],
     queryFn: async () => {
       if (!actor) return [];
-      const raw = await actor.getAllPersistentMenuItems();
-      return raw.map((item, idx) => ({ id: BigInt(idx), ...item }));
+      const raw = (await actor.getAllPersistentMenuItems()) as unknown as Array<
+        [bigint, MenuItem]
+      >;
+      return raw.map((entry) => ({ id: entry[0], ...entry[1] }));
     },
     enabled: !!actor && !isFetching,
   });

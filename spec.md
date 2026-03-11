@@ -1,22 +1,20 @@
 # Rana's Food Fantasy
 
 ## Current State
-The app has a public homepage with menu display and an admin panel at `/admin`. Admin access requires Internet Identity (blockchain login) + admin role assignment. Every redeploy resets admin roles, causing permanent "Access Denied" errors. Menu display works on public homepage but admin panel is inaccessible.
+The backend stores menu items in a non-stable Map, so every deployment erases all admin edits and re-seeds defaults. The `do` block also re-seeds every canister startup regardless.
 
 ## Requested Changes (Diff)
 
 ### Add
-- Simple password-based admin login (password: `RanaAdmin2024`) — no Internet Identity required
+- Nothing new
 
 ### Modify
-- Backend: Remove admin role checks from all menu mutation functions (addPersistentMenuItem, updatePersistentMenuItem, deletePersistentMenuItem, seedSampleItems) — make them callable by anyone
-- Frontend AdminPage: Replace Internet Identity login flow with a simple password input form
+- Make `nextItemId` and `persistentMenuItems` stable so data survives deployments
+- Change the seeding logic to only seed if the map is empty (first-time only)
 
 ### Remove
-- Internet Identity dependency from AdminPage
-- `useIsCallerAdmin` check that was causing Access Denied
-- `useInternetIdentity` hook usage in AdminPage
+- Nothing
 
 ## Implementation Plan
-1. Update `src/backend/main.mo` — remove all `AccessControl.isAdmin` checks from menu functions
-2. Update `src/frontend/src/pages/AdminPage.tsx` — replace Internet Identity with password login
+1. Add `stable` keyword to `nextItemId` and `persistentMenuItems` declarations
+2. Wrap the seed block with a condition: only seed when map is empty

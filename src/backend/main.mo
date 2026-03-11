@@ -53,8 +53,8 @@ actor {
   };
 
   // Store menu items in a persistent Map with Id as key
-  var nextItemId = 0;
-  let persistentMenuItems = Map.empty<Nat, MenuItem>();
+  stable var nextItemId = 0;
+  stable let persistentMenuItems = Map.empty<Nat, MenuItem>();
 
   // Authorization system (kept for stable variable compatibility — not used for menu auth)
   let accessControlState = AccessControl.initState();
@@ -227,8 +227,8 @@ actor {
     ),
   ];
 
-  // Initialize with default menu items on first deploy
-  do {
+  // Initialize with default menu items on first deploy only (skip if already has data)
+  if (persistentMenuItems.size() == 0) {
     for (item in defaultItems.values()) {
       persistentMenuItems.add(item.0, item.1);
     };
