@@ -38,27 +38,29 @@ import {
   CheckCircle2,
   ChefHat,
   Dumbbell,
+  Eye,
+  EyeOff,
   Loader2,
+  Lock,
   Pencil,
   Phone,
   Plus,
-  ShieldAlert,
   Sparkles,
   Trash2,
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { useInternetIdentity } from "../hooks/useInternetIdentity";
 import {
   Category,
   useAddMenuItem,
   useDeleteMenuItem,
   useGetAllMenuItems,
-  useIsCallerAdmin,
   useSeedSampleItems,
   useUpdateMenuItem,
 } from "../hooks/useQueries";
 import type { MenuItem, MenuItemWithId } from "../hooks/useQueries";
+
+const ADMIN_PASSWORD = "RanaAdmin2024";
 
 interface AdminPageProps {
   navigate: (path: string) => void;
@@ -110,79 +112,83 @@ const EMPTY_FORM: FormData = {
   available: true,
 };
 
-function LoginPrompt() {
-  const { login, loginStatus } = useInternetIdentity();
-  const isLoggingIn = loginStatus === "logging-in";
+function LoginPrompt({ onLogin }: { onLogin: () => void }) {
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleLogin = () => {
+    if (password === ADMIN_PASSWORD) {
+      setError("");
+      onLogin();
+    } else {
+      setError("Incorrect password. Please try again.");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="max-w-md w-full text-center space-y-6 p-8 bg-card rounded-3xl border border-border shadow-card">
-        <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
-          <ShieldAlert className="w-8 h-8 text-primary" />
-        </div>
-        <div>
+      <div className="max-w-md w-full space-y-6 p-8 bg-card rounded-3xl border border-border shadow-card">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Lock className="w-8 h-8 text-primary" />
+          </div>
           <h1 className="font-display text-2xl font-bold text-foreground mb-2">
             Admin Access
           </h1>
           <p className="text-muted-foreground text-sm">
-            Please login with Internet Identity to access the admin panel for
-            Rana's Food Fantasy.
+            Enter the admin password to manage Rana's Food Fantasy menu.
           </p>
         </div>
-        <Button
-          size="lg"
-          className="w-full bg-primary hover:bg-primary/90 rounded-full font-semibold"
-          onClick={() => login()}
-          disabled={isLoggingIn}
-        >
-          {isLoggingIn ? (
-            <>
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Logging in...
-            </>
-          ) : (
-            "Login to Continue"
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="admin-password">Password</Label>
+            <div className="relative">
+              <Input
+                id="admin-password"
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleLogin()}
+                placeholder="Enter admin password"
+                data-ocid="admin.input"
+              />
+              <button
+                type="button"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                onClick={() => setShowPassword((v) => !v)}
+              >
+                {showPassword ? (
+                  <EyeOff className="w-4 h-4" />
+                ) : (
+                  <Eye className="w-4 h-4" />
+                )}
+              </button>
+            </div>
+          </div>
+          {error && (
+            <Alert variant="destructive" data-ocid="admin.error_state">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
           )}
-        </Button>
-      </div>
-    </div>
-  );
-}
-
-function AccessDenied({ navigate }: { navigate: (path: string) => void }) {
-  return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="max-w-md w-full text-center space-y-6 p-8 bg-card rounded-3xl border border-border shadow-card">
-        <div className="w-16 h-16 bg-destructive/10 rounded-full flex items-center justify-center mx-auto">
-          <ShieldAlert className="w-8 h-8 text-destructive" />
+          <Button
+            size="lg"
+            className="w-full bg-primary hover:bg-primary/90 rounded-full font-semibold"
+            onClick={handleLogin}
+            data-ocid="admin.submit_button"
+          >
+            Login
+          </Button>
         </div>
-        <div>
-          <h1 className="font-display text-2xl font-bold text-foreground mb-2">
-            Access Denied
-          </h1>
-          <p className="text-muted-foreground text-sm">
-            You don't have admin privileges. Please contact the administrator.
-          </p>
-        </div>
-        <Button
-          variant="outline"
-          className="w-full rounded-full"
-          onClick={() => navigate("/")}
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Home
-        </Button>
       </div>
     </div>
   );
 }
 
 export default function AdminPage({ navigate }: AdminPageProps) {
-  const { identity, clear } = useInternetIdentity();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const queryClient = useQueryClient();
-  const isAuthenticated = !!identity;
 
-  const { data: isAdmin, isLoading: adminLoading } = useIsCallerAdmin();
   const {
     data: menuItems,
     isLoading: menuLoading,
@@ -199,26 +205,9 @@ export default function AdminPage({ navigate }: AdminPageProps) {
   const [form, setForm] = useState<FormData>(EMPTY_FORM);
   const [formError, setFormError] = useState("");
 
-  // Loading state while checking auth
-  if (!isAuthenticated) return <LoginPrompt />;
-
-  if (adminLoading) {
-    return (
-      <div
-        className="min-h-screen bg-background flex items-center justify-center"
-        data-ocid="admin.loading_state"
-      >
-        <div className="text-center space-y-4">
-          <Loader2 className="w-10 h-10 text-primary animate-spin mx-auto" />
-          <p className="text-muted-foreground font-medium">
-            Verifying admin access...
-          </p>
-        </div>
-      </div>
-    );
+  if (!isAuthenticated) {
+    return <LoginPrompt onLogin={() => setIsAuthenticated(true)} />;
   }
-
-  if (!isAdmin) return <AccessDenied navigate={navigate} />;
 
   // Form validation
   const validateForm = (): boolean => {
@@ -306,8 +295,8 @@ export default function AdminPage({ navigate }: AdminPageProps) {
     }
   };
 
-  const handleLogout = async () => {
-    await clear();
+  const handleLogout = () => {
+    setIsAuthenticated(false);
     queryClient.clear();
     navigate("/");
   };
@@ -325,7 +314,7 @@ export default function AdminPage({ navigate }: AdminPageProps) {
               size="sm"
               className="text-white/70 hover:text-white hover:bg-white/10"
               onClick={() => navigate("/")}
-              data-ocid="nav.home_link"
+              data-ocid="nav.link"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               <span className="hidden sm:inline">Back to Site</span>
@@ -359,6 +348,7 @@ export default function AdminPage({ navigate }: AdminPageProps) {
               size="sm"
               className="text-white/70 hover:text-white hover:bg-white/10 text-xs"
               onClick={handleLogout}
+              data-ocid="admin.button"
             >
               Logout
             </Button>
@@ -384,7 +374,7 @@ export default function AdminPage({ navigate }: AdminPageProps) {
               className="border-primary/30 text-primary hover:bg-primary/10"
               onClick={handleSeed}
               disabled={seedMutation.isPending}
-              data-ocid="admin.seed_button"
+              data-ocid="admin.secondary_button"
             >
               {seedMutation.isPending ? (
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -397,7 +387,7 @@ export default function AdminPage({ navigate }: AdminPageProps) {
               size="sm"
               className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg shadow-warm"
               onClick={openAddForm}
-              data-ocid="admin.add_button"
+              data-ocid="admin.primary_button"
             >
               <Plus className="w-4 h-4 mr-2" />
               Add Item
@@ -473,7 +463,7 @@ export default function AdminPage({ navigate }: AdminPageProps) {
                 variant="outline"
                 onClick={handleSeed}
                 disabled={seedMutation.isPending}
-                data-ocid="admin.seed_button"
+                data-ocid="admin.secondary_button"
               >
                 {seedMutation.isPending ? (
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -485,7 +475,7 @@ export default function AdminPage({ navigate }: AdminPageProps) {
               <Button
                 className="bg-primary hover:bg-primary/90"
                 onClick={openAddForm}
-                data-ocid="admin.add_button"
+                data-ocid="admin.primary_button"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Add First Item

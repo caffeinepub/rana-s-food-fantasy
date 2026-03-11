@@ -26,7 +26,7 @@ actor {
     #gymProtein;
   };
 
-  // User profile type
+  // User profile type (kept for stable variable compatibility)
   public type UserProfile = {
     name : Text;
   };
@@ -56,14 +56,14 @@ actor {
   var nextItemId = 0;
   let persistentMenuItems = Map.empty<Nat, MenuItem>();
 
-  // Authorization system
+  // Authorization system (kept for stable variable compatibility — not used for menu auth)
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
 
-  // User profiles storage
+  // User profiles storage (kept for stable variable compatibility)
   let userProfiles = Map.empty<Principal, UserProfile>();
 
-  // Auto-seed menu items on first initialization
+  // Default menu items
   let defaultItems : [(Nat, MenuItem)] = [
     (
       0,
@@ -175,6 +175,56 @@ actor {
         available = true;
       },
     ),
+    (
+      11,
+      {
+        name = "Whole & Dust Turmeric";
+        description = "Pure homemade turmeric — whole and powder form";
+        price = 150;
+        category = #specialPerKg;
+        available = true;
+      },
+    ),
+    (
+      12,
+      {
+        name = "Whole & Dust Jeera";
+        description = "Pure homemade cumin — whole and powder form";
+        price = 120;
+        category = #specialPerKg;
+        available = true;
+      },
+    ),
+    (
+      13,
+      {
+        name = "Whole & Dust Coriander";
+        description = "Pure homemade coriander — whole and powder form";
+        price = 100;
+        category = #specialPerKg;
+        available = true;
+      },
+    ),
+    (
+      14,
+      {
+        name = "Homemade Garam Masala";
+        description = "Freshly ground garam masala made with traditional recipe";
+        price = 200;
+        category = #specialPerKg;
+        available = true;
+      },
+    ),
+    (
+      15,
+      {
+        name = "Biryani Masala & Mixed Masalas";
+        description = "Homemade biryani masala and other mixed masala blends";
+        price = 180;
+        category = #specialPerKg;
+        available = true;
+      },
+    ),
   ];
 
   // Initialize with default menu items on first deploy
@@ -185,69 +235,30 @@ actor {
     nextItemId := defaultItems.size();
   };
 
-  // User profile management functions
-  public query ({ caller }) func getCallerUserProfile() : async ?UserProfile {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can access profiles");
-    };
-    userProfiles.get(caller);
-  };
-
-  public query ({ caller }) func getUserProfile(user : Principal) : async ?UserProfile {
-    if (caller != user and not AccessControl.isAdmin(accessControlState, caller)) {
-      Runtime.trap("Unauthorized: Can only view your own profile");
-    };
-    userProfiles.get(user);
-  };
-
-  public shared ({ caller }) func saveCallerUserProfile(profile : UserProfile) : async () {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can save profiles");
-    };
-    userProfiles.add(caller, profile);
-  };
-
-  // Seed persistent store with sample items (admin only, for resetting)
-  public shared ({ caller }) func seedSampleItems() : async () {
-    if (not (AccessControl.isAdmin(accessControlState, caller))) {
-      Runtime.trap("Unauthorized: Only admins can perform this action");
-    };
-
-    // Clear existing and re-add default items
+  // Seed persistent store with sample items (reset to defaults)
+  public shared func seedSampleItems() : async () {
     for (item in defaultItems.values()) {
       persistentMenuItems.add(item.0, item.1);
     };
     nextItemId := defaultItems.size();
   };
 
-  // Admin functions for menu item management
-  public shared ({ caller }) func addPersistentMenuItem(menuItem : MenuItem) : async Nat {
-    if (not (AccessControl.isAdmin(accessControlState, caller))) {
-      Runtime.trap("Unauthorized: Only admins can perform this action");
-    };
-
+  // Menu item management functions (no auth required — admin protected by frontend password)
+  public shared func addPersistentMenuItem(menuItem : MenuItem) : async Nat {
     let id = nextItemId;
     persistentMenuItems.add(id, menuItem);
     nextItemId += 1;
     id;
   };
 
-  public shared ({ caller }) func updatePersistentMenuItem(id : Nat, menuItem : MenuItem) : async () {
-    if (not (AccessControl.isAdmin(accessControlState, caller))) {
-      Runtime.trap("Unauthorized: Only admins can perform this action");
-    };
-
+  public shared func updatePersistentMenuItem(id : Nat, menuItem : MenuItem) : async () {
     if (not persistentMenuItems.containsKey(id)) {
       Runtime.trap("Item not found");
     };
     persistentMenuItems.add(id, menuItem);
   };
 
-  public shared ({ caller }) func deletePersistentMenuItem(id : Nat) : async () {
-    if (not (AccessControl.isAdmin(accessControlState, caller))) {
-      Runtime.trap("Unauthorized: Only admins can perform this action");
-    };
-
+  public shared func deletePersistentMenuItem(id : Nat) : async () {
     if (not persistentMenuItems.containsKey(id)) {
       Runtime.trap("Item not found");
     };

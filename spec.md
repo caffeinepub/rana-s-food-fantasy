@@ -1,29 +1,22 @@
 # Rana's Food Fantasy
 
 ## Current State
-New project. No existing frontend or backend code.
+The app has a public homepage with menu display and an admin panel at `/admin`. Admin access requires Internet Identity (blockchain login) + admin role assignment. Every redeploy resets admin roles, causing permanent "Access Denied" errors. Menu display works on public homepage but admin panel is inaccessible.
 
 ## Requested Changes (Diff)
 
 ### Add
-- Landing/home page for a cloud kitchen business called "Rana's Food Fantasy"
-- Hero section with logo and tagline about homemade food, spices, and fresh vegetables
-- About/services section listing: cloud kitchen meals, homemade food, spices, fresh vegetables delivered at home
-- Menu/offerings section showcasing the three main categories (homemade food, spices, fresh vegetables)
-- Contact section with phone number (8906465554), address (Durga Rani Apartment, Sarada Pally, Shiv Mandir, Siliguri-734011, West Bengal), and FSSAI registration number (22826080000159)
-- Order/inquiry call-to-action (click-to-call button)
-- Footer with business details and FSSAI number
-- Admin panel to manage menu items (add, edit, delete) with category support
-- Customer-facing menu page showing available items by category
+- Simple password-based admin login (password: `RanaAdmin2024`) — no Internet Identity required
 
 ### Modify
-- Nothing (new project)
+- Backend: Remove admin role checks from all menu mutation functions (addPersistentMenuItem, updatePersistentMenuItem, deletePersistentMenuItem, seedSampleItems) — make them callable by anyone
+- Frontend AdminPage: Replace Internet Identity login flow with a simple password input form
 
 ### Remove
-- Nothing (new project)
+- Internet Identity dependency from AdminPage
+- `useIsCallerAdmin` check that was causing Access Denied
+- `useInternetIdentity` hook usage in AdminPage
 
 ## Implementation Plan
-1. Backend: Menu item data store with CRUD operations. Categories: homemade food, spices, vegetables. Fields: name, description, price, category, available (bool).
-2. Frontend: Multi-section landing page with hero (logo), services, menu listing by category, contact/location section, footer with FSSAI number.
-3. Admin page (password-protected via authorization component) to manage menu items.
-4. Order CTA: click-to-call button linking to the phone number.
+1. Update `src/backend/main.mo` — remove all `AccessControl.isAdmin` checks from menu functions
+2. Update `src/frontend/src/pages/AdminPage.tsx` — replace Internet Identity with password login
